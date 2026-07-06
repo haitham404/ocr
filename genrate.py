@@ -62,8 +62,10 @@ def draw_text(
         x,
         y,
         font="Noto Sans Arabic",
-        size=20,
-        color=(0.08, 0.08, 0.08)
+        size=25,
+        color=(0.08, 0.08, 0.08),
+        letter_spacing = 0,
+        is_bold = False
 ):
 
     layout = PangoCairo.create_layout(ctx)
@@ -76,7 +78,16 @@ def draw_text(
 
     desc.set_size(size * Pango.SCALE)
 
+    if is_bold:
+        desc.set_weight(Pango.Weight.BOLD)
+
     layout.set_font_description(desc)
+
+    if letter_spacing > 0:
+        attrs = Pango.AttrList()
+        spacing_attr = Pango.attr_letter_spacing_new(int(letter_spacing * Pango.SCALE))
+        attrs.insert(spacing_attr)
+        layout.set_attributes(attrs)
 
     layout.set_auto_dir(True)
 
@@ -122,8 +133,9 @@ for i, person in enumerate(dataset):
         ctx,
         person["name_first"],
         *POS["name_first"],
-        font="Noto Sans Arabic",
-        size=34
+        font="Simplified Arabic",
+        size=31,
+        is_bold=True
     )
 
     # -------------------------------
@@ -134,8 +146,10 @@ for i, person in enumerate(dataset):
         ctx,
         person["name_rest"],
         *POS["name_rest"],
-        font="Noto Sans Arabic",
-        size=29
+        font="Kufi",
+        size=31,
+        is_bold=True
+
     )
 
     # -------------------------------
@@ -146,8 +160,10 @@ for i, person in enumerate(dataset):
         ctx,
         person["street"],
         *POS["street"],
-        font="Noto Sans Arabic",
-        size=26
+        font="Simplified Arabic",
+        size=31,
+        is_bold=True
+
     )
 
     # -------------------------------
@@ -159,19 +175,23 @@ for i, person in enumerate(dataset):
         person["address_rest"],
         *POS["address_rest"],
         font="Noto Sans Arabic",
-        size=26
+        size=31,
+        is_bold=True
+
     )
 
     # -------------------------------
     # National ID
     # -------------------------------
-
     draw_text(
         ctx,
         person["national_id"],
         *POS["nid"],
         font="DejaVu Sans",
-        size=40
+        size=36,
+        letter_spacing=17,
+        is_bold=True
+
     )
 
     # ============================================================
