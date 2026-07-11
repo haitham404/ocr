@@ -16,24 +16,26 @@ from gi.repository import Pango, PangoCairo
 # Files
 # ============================================================
 
-FRONT_TEMPLATE = "template_front.jpg"
+FRONT_TEMPLATE = "template_front.png"
 BACK_TEMPLATE = "template_back.jpg"
 
 OUTPUT_DIR = "output_cards"
+OUTPUT_DIR_DATASET = "Dataset"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR_DATASET, exist_ok=True)
 
 # ============================================================
 # Dataset
 # ============================================================
 
-with open("front_dataset.json", encoding="utf-8") as f:
+with open("dataset.json", encoding="utf-8") as f:
     front_dataset = json.load(f)
 
-with open("back_dataset.json", encoding="utf-8") as f:
+with open("dataset.json", encoding="utf-8") as f:
     back_dataset = json.load(f)
 
-with open("front_config.json", encoding="utf-8") as f:
+with open("config_new.json", encoding="utf-8") as f:
     FRONT_POS = json.load(f)
 
 with open("back_config.json", encoding="utf-8") as f:
@@ -226,10 +228,13 @@ def post_process(surface, output_path):
 # Generate Cards
 # ============================================================
 
+cnt = 0
 for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
-
+    cnt+=1
+    if(cnt == 20):
+        break
     card_dir = os.path.join(
-        OUTPUT_DIR,
+        OUTPUT_DIR_DATASET,
         f"card_{i:03d}"
     )
 
@@ -252,7 +257,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
         person["name_first"],
         *FRONT_POS["name_first"],
         font="Simplified Arabic",
-        size=31,
+        size=23,
         is_bold=True
     )
 
@@ -265,7 +270,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
         person["name_rest"],
         *FRONT_POS["name_rest"],
         font="Kufi",
-        size=31,
+        size=23,
         is_bold=True
     )
 
@@ -278,7 +283,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
         person["street"],
         *FRONT_POS["street"],
         font="Simplified Arabic",
-        size=31,
+        size=23,
         is_bold=True
     )
 
@@ -291,7 +296,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
         person["address_rest"],
         *FRONT_POS["address_rest"],
         font="Noto Sans Arabic",
-        size=31,
+        size=22,
         is_bold=True
     )
 
@@ -304,10 +309,25 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
         person["national_id"],
         *FRONT_POS["nid"],
         font="DejaVu Sans",
-        size=36,
+        size=25,
         letter_spacing=17,
         is_bold=True
     )
+    # -------------------------------
+    # Brith Date
+    # -------------------------------
+
+    draw_text(
+        ctx,
+        person["birth_date"],
+        *FRONT_POS["bdate"],
+        font="DejaVu Sans",
+        size=28,
+        letter_spacing=7,
+        is_bold=True
+    )
+
+
 
     post_process(
         surface,
@@ -326,7 +346,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
     # National ID
     # -------------------------------
 
-    draw_back_text(
+    draw_text(
         ctx,
         back["national_id"],
         *BACK_POS["national_id"],
@@ -340,7 +360,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
     # Occupation
     # -------------------------------
 
-    draw_back_text(
+    draw_text(
         ctx,
         back["occupation"],
         *BACK_POS["occupation"],
@@ -365,7 +385,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
     # -------------------------------
     # Expiry Date
     # -------------------------------
-    draw_back_text(
+    draw_text(
         ctx,
         back["expiry_date"],
         *BACK_POS["expiry_date"],
@@ -379,7 +399,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
     # Religion
     # -------------------------------
 
-    draw_back_text(
+    draw_text(
         ctx,
         back["religion"],
         *BACK_POS["religion"],
@@ -392,7 +412,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
     # Gender
     # -------------------------------
 
-    draw_back_text(
+    draw_text(
         ctx,
         back["gender"],
         *BACK_POS["gender"],
@@ -405,7 +425,7 @@ for i, (person, back) in enumerate(zip(front_dataset, back_dataset)):
     # Marital Status
     # -------------------------------
 
-    draw_back_text(
+    draw_text(
         ctx,
         back["marital_status"],
         *BACK_POS["marital_status"],
