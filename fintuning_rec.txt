@@ -1,0 +1,13 @@
+python tools/train.py \
+  -c configs/rec/PP-OCRv5/multi_language/arabic_PP-OCRv5_mobile_rec.yaml \
+  -o Global.pretrained_model=./arabic_PP-OCRv5_mobile_rec_pretrained.pdparams \
+  Global.save_model_dir=./output/egypt_id_rec \
+  Train.dataset.data_dir=../rec_dataset \
+  Train.dataset.label_file_list='[../rec_dataset/train.txt]' \
+  Eval.dataset.data_dir=../rec_dataset \
+  Eval.dataset.label_file_list='[../rec_dataset/val.txt]'
+
+
+
+
+  

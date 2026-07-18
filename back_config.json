@@ -1,0 +1,30 @@
+{
+    "national_id": [
+        1030,
+        70
+    ],
+    "occupation": [
+        1030,
+        115
+    ],
+    "gender": [
+        1030,
+        225
+    ],
+    "religion": [
+        750,
+        225
+    ],
+    "marital_status": [
+        490,
+        225
+    ],
+    "expiry_date": [
+        1030,
+        355
+    ],
+    "issue_date": [
+        490,
+        70
+    ]
+}

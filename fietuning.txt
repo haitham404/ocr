@@ -1,0 +1,8 @@
+python tools/train.py \
+  -c configs/det/PP-OCRv5/PP-OCRv5_mobile_det.yml \
+  -o Global.pretrained_model=./PP-OCRv5_mobile_det_pretrained.pdparams \
+  Global.save_model_dir=./output/egypt_id_det \
+  Train.dataset.data_dir=../Dataset \
+  Train.dataset.label_file_list='[../Dataset/train.txt]' \
+  Eval.dataset.data_dir=../Dataset \
+  Eval.dataset.label_file_list='[../Dataset/val.txt]'

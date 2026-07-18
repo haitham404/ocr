@@ -1,0 +1,8 @@
+PaddleOCR/
+Dataset/
+rec_dataset/
+results/
+results_rec_only/
+IDS/
+__pycache__/
+*.pyc
