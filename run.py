@@ -95,7 +95,7 @@ for card_dir in cards:
             print("Cannot read image")
             continue
 
-
+       
         # =====================================================
         # OCR
         # =====================================================
@@ -140,7 +140,7 @@ for card_dir in cards:
             texts,
             scores,
         ):
-
+           
             score = float(score)
 
             if score < 0.70:
@@ -172,7 +172,6 @@ for card_dir in cards:
 
                 continue
 
-
             cv2.rectangle(
                 vis,
                 (x1, y1),
@@ -180,12 +179,6 @@ for card_dir in cards:
                 (0, 255, 0),
                 2,
             )
-
-
-            print(
-                f"{text} ({score:.3f})"
-            )
-
 
             rows.append(
                 {
@@ -201,6 +194,8 @@ for card_dir in cards:
                     "y2": y2,
                 }
             )
+
+            print(f"{text} ({score:.3f})")
 
 
         # =====================================================

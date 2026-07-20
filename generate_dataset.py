@@ -90,7 +90,7 @@ def generate_national_id(century, year, month, day, gov_code, is_male):
 # 3. بناء الـ 1000 بطاقة
 # ==========================================
 dataset = []
-total_records = 1000
+total_records = 500
 
 gov_selections = GOV_OTHER + GOV_MAIN
 remaining_count = total_records - len(gov_selections)
