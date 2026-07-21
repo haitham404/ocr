@@ -95,7 +95,7 @@ for card_dir in cards:
             print("Cannot read image")
             continue
 
-
+       
         # =====================================================
         # OCR
         # =====================================================
@@ -103,7 +103,12 @@ for card_dir in cards:
         t0 = time.perf_counter()
 
         result = ocr.predict(
-            str(image_path)
+        str(image_path),
+        text_det_limit_side_len=1600,
+        text_det_limit_type="max",
+        text_det_box_thresh=0.4,      # lower = keep more low-confidence tail digits
+        text_det_unclip_ratio=2.2,    # higher = expand box further past the shrunk core
+        text_det_use_dilation=True,
         )
 
         latency = time.perf_counter() - t0
@@ -140,7 +145,7 @@ for card_dir in cards:
             texts,
             scores,
         ):
-
+           
             score = float(score)
 
             if score < 0.70:
@@ -172,7 +177,6 @@ for card_dir in cards:
 
                 continue
 
-
             cv2.rectangle(
                 vis,
                 (x1, y1),
@@ -180,12 +184,6 @@ for card_dir in cards:
                 (0, 255, 0),
                 2,
             )
-
-
-            print(
-                f"{text} ({score:.3f})"
-            )
-
 
             rows.append(
                 {
@@ -201,6 +199,8 @@ for card_dir in cards:
                     "y2": y2,
                 }
             )
+
+            print(f"{text} ({score:.3f})")
 
 
         # =====================================================

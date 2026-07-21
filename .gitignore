@@ -1,5 +1,6 @@
 PaddleOCR/
 Dataset/
+eval_results/
 rec_dataset/
 results/
 results_rec_only/
