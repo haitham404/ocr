@@ -124,7 +124,7 @@ def merge_same_line_boxes(dt_polys, dt_scores, gap_ratio=GAP_RATIO, y_center_rat
 def main():
     # LOAD MODELS (two standalone modules instead of one full pipeline)
     detector = TextDetection(
-        model_name="PP-OCRv5_mobile_det",
+        model_name="PP-OCRv5_server_det",
         device="cpu",
     )
     recognizer = TextRecognition(
