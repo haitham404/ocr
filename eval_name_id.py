@@ -20,9 +20,14 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # 1. UPGRADED MODEL: Initializing PaddleOCR with the heavier Server model
 # The server model natively handles complex layouts and challenging spacing better than mobile.
+model_name = "PP-OCRv5_mobile_det"
 ocr = TextDetection(
-    model_name="PP-OCRv5_server_det", 
-    device="cpu", # Switch to "gpu:0" if testing on CUDA-enabled hardware
+    model_name = model_name, 
+    device="cpu",
+    enable_mkldnn=True, 
+    cpu_threads=12,              # ↑ from 6 for better throughput
+    limit_side_len=960,
+    limit_type="max",        # ← CRITICAL: actually downsize large images
 )
 
 # =====================================================
@@ -162,7 +167,7 @@ def run_evaluation():
 
     # FINAL INDEPENDENT METRICS
     print("\n" + "=" * 50)
-    print("REGION-SPECIFIC EVALUATION RESULTS (STRICT IOU >= 0.85)")
+    print("REGION-SPECIFIC EVALUATION RESULTS (STRICT IOU >= 0.55)")
     print("=" * 50)
     
     for region in ['name', 'id']:
@@ -178,6 +183,7 @@ def run_evaluation():
         print(f"  Missed / Dropped:   {fn}")
         print(f"  --> RECALL:         {recall:.4f}")
         print("-" * 50)
+        print(f"Model Name {model_name}")
 
 if __name__ == "__main__":
     run_evaluation()
