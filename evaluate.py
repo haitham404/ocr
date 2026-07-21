@@ -33,7 +33,7 @@ import csv
 import json
 import sys
 from pathlib import Path
-
+import time
 import cv2
 import numpy as np
 
@@ -179,6 +179,36 @@ def parse_label_file(label_path: Path):
         entries.append((img_rel, gt_boxes))
     return entries
 
+# =====================================================
+# CROP GT BOXES TO ROI
+# =====================================================
+def crop_gt_boxes(gt_boxes, crop_x1, crop_y1, crop_x2, crop_y2):
+
+    cropped = []
+
+    for gt in gt_boxes:
+
+        pts = gt["points"].copy()
+
+        # discard if any part lies outside ROI
+        if (
+            pts[:, 0].min() < crop_x1 or
+            pts[:, 0].max() > crop_x2 or
+            pts[:, 1].min() < crop_y1 or
+            pts[:, 1].max() > crop_y2
+        ):
+            continue
+
+        pts[:, 0] -= crop_x1
+        pts[:, 1] -= crop_y1
+
+        cropped.append({
+            "points": pts,
+            "text": gt["text"],
+            "ignore": gt["ignore"],
+        })
+
+    return cropped
 
 # =====================================================
 # MATCHING / METRICS
@@ -359,6 +389,7 @@ def main():
     all_matched_ious = []
     per_image_rows = []
     skipped = 0
+    latencies = []
 
     for idx, (img_rel, gt_boxes) in enumerate(entries):
         image_path = args.image_dir / img_rel
@@ -373,7 +404,48 @@ def main():
             skipped += 1
             continue
 
-        outputs = detector.predict(input=str(image_path), batch_size=1, **predict_kwargs)
+
+
+        # =====================================================
+        # CROP ROI
+        # =====================================================
+
+        FRONT_ROI = (0.4240, 0.2667, 0.9620, 0.8822)
+        BACK_ROI  = (0.2352, 0.0664, 0.8258, 0.5461)
+
+        h, w = image.shape[:2]
+        # Determine card side from file name
+        if "front" in img_rel.lower():
+            roi = FRONT_ROI
+        else:
+            roi = BACK_ROI
+
+        x1 = int(roi[0] * w)
+        y1 = int(roi[1] * h)
+        x2 = int(roi[2] * w)
+        y2 = int(roi[3] * h)
+
+        image = image[y1:y2, x1:x2]
+        gt_boxes = crop_gt_boxes(
+            gt_boxes,
+              x1,
+              y1,
+              x2,
+              y2,
+            )
+
+        t0 = time.perf_counter()
+
+        outputs = detector.predict(
+            image,
+            batch_size=1,
+            **predict_kwargs,
+        )
+
+        latency = time.perf_counter() - t0
+        latencies.append(latency)        
+                
+        
         dt_polys, dt_scores = [], []
         for res in outputs:
             data = res.json.get("res", res.json)
@@ -446,6 +518,7 @@ def main():
         "f1_score": round(f1, 4),
         "mean_iou_matched": round(mean_iou_all, 4),
     }
+    
 
     with open(args.output_dir / "detector_metrics.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
@@ -468,6 +541,10 @@ def main():
     print(f"Recall           : {recall:.4f}")
     print(f"F1-score         : {f1:.4f}")
     print(f"Mean IoU (TP)    : {mean_iou_all:.4f}")
+    if latencies:
+        avg_latency = sum(latencies) / len(latencies)
+        print(f"Avg Latency      : {avg_latency*1000:.2f} ms/image")
+        print(f"FPS              : {1/avg_latency:.2f}")
     print(f"Metrics JSON     : {args.output_dir / 'detector_metrics.json'}")
     print(f"Per-image CSV    : {args.output_dir / 'per_image_metrics.csv'}")
     if not args.no_vis:
