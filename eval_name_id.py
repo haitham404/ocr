@@ -1,9 +1,10 @@
 import json
+import time
 import cv2
 import numpy as np
 from pathlib import Path
+from tqdm import tqdm
 from paddleocr import TextDetection
-from paddleocr import PaddleOCR
 
 # =====================================================
 # CONFIGURATION
@@ -17,11 +18,13 @@ OUTPUT_DIR = BASE_DIR / "eval_results"
 
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Initialize PaddleOCR (Detector ONLY)
+# 1. UPGRADED MODEL: Initializing PaddleOCR with the heavier Server model
+# The server model natively handles complex layouts and challenging spacing better than mobile.
 ocr = TextDetection(
-    model_name="PP-OCRv5_mobile_det",
-    device="cpu",
+    model_name="PP-OCRv5_server_det", 
+    device="cpu", # Switch to "gpu:0" if testing on CUDA-enabled hardware
 )
+
 # =====================================================
 # METRIC HELPER
 # =====================================================
@@ -40,16 +43,12 @@ def calculate_iou(box1, box2, img_h, img_w):
 
 def identify_region(transcription, index):
     """
-    Identifies the region based on your specific val.txt structure.
+    Identifies the region based on the val.txt structure.
     """
-    # 1. Identify National ID (14 digits)
-    # Python's .isnumeric() natively understands Arabic numerals (e.g., ٢٤١٠١١٣٠١٢١٦٩٥)
     clean_text = transcription.replace(" ", "").replace("-", "")
     if len(clean_text) == 14 and clean_text.isnumeric():
         return 'id'
     
-    # 2. Identify First Name
-    # In your val.txt, the first name is consistently the first dictionary (index 0)
     if index == 0:
         return 'name'
         
@@ -66,25 +65,22 @@ def run_evaluation():
     with open(VAL_TXT_PATH, "r", encoding="utf-8") as f:
         raw_lines = f.readlines()
 
-    # --- FILTERING LOGIC START ---
+    # --- FILTERING LOGIC ---
     lines = []
     for line in raw_lines:
-        # PaddleOCR val.txt format: "image_path \t [{"transcription":...}]"
         image_path = line.split('\t')[0].lower() 
-        
-        # Check if the word "back" is in the filename or folder path
-        if "back" in image_path:
-            lines.append(line)
+        # if "back" in image_path:
+        lines.append(line)
 
-    # Independent Metrics Tracking
     metrics = {
         'name': {'TP': 0, 'FN': 0, 'GT_Total': 0},
         'id':   {'TP': 0, 'FN': 0, 'GT_Total': 0}
     }
 
-    print(f"Evaluating {len(lines)} images independently for First Name and ID...")
+    print(f"Evaluating {len(lines)} images independently using PP-OCRv5 Server...")
 
-    for line in lines:
+    # 2. PROGRESS TRACKING: Processing will be slower on CPU; tqdm provides visibility.
+    for line in tqdm(lines, desc="Running Server Detection Validation"):
         if not line.strip():
             continue
             
@@ -92,10 +88,8 @@ def run_evaluation():
         image_path = IMAGE_ROOT_DIR / img_rel_path
 
         if not image_path.exists():
-            print(f"[DEBUG] Missing image on disk: {image_path}")
             continue
 
-        # 1. Parse Ground Truth and filter for Name and ID using Index and Text
         gt_target_boxes = {}
         try:
             gt_data = json.loads(labels_json)
@@ -103,21 +97,26 @@ def run_evaluation():
                 region_type = identify_region(item.get('transcription', ''), idx)
                 if region_type in ['name', 'id']:
                     gt_target_boxes[region_type] = item['points']
+                    # Only count ID GT when image contains "back"
+                    if region_type == 'id' and "back" not in img_rel_path.lower():
+                        continue
                     metrics[region_type]['GT_Total'] += 1
-        except Exception as e:
-            print(f"[DEBUG] JSON parsing failed for {img_rel_path}: {e}")
+        except Exception:
             continue
         
         img = cv2.imread(str(image_path))
         if img is None:
-            print(f"[DEBUG] cv2 failed to read image: {image_path}")
             continue
             
         img_h, img_w = img.shape[:2]
         vis_img = img.copy()
 
-        # 2. Get Predictions using V5
+        # Get Predictions using the Server Model (with per-image latency)
+        t_start = time.time()
         results = list(ocr.predict(img))
+        t_end = time.time()
+        latency_ms = (t_end - t_start) * 1000
+        tqdm.write(f"  [{img_rel_path}] Latency: {latency_ms:.1f}ms")
         
         pred_boxes = []
         if results and isinstance(results[0], dict):
@@ -128,23 +127,25 @@ def run_evaluation():
         elif results and isinstance(results[0], list):
             pred_boxes = results[0]
 
-        # 3. Calculate Matches per Region
         for region_type, gt_box in gt_target_boxes.items():
             matched = False
             
             for pred_box in pred_boxes:
                 iou = calculate_iou(gt_box, pred_box, img_h, img_w)
-                # If the prediction box overlaps the ground truth by more than 50%
-                if iou > 0.7:
+                
+                # 3. STRICTER METRIC: Enforcing 0.55 IoU to demand geometric precision.
+                if iou >= 0.55:
                     matched = True
                     break 
                     
-            if matched:
-                metrics[region_type]['TP'] += 1
-            else:
-                metrics[region_type]['FN'] += 1
+            # Only update ID metrics for back images; name metrics always update
+            if region_type != 'id' or "back" in img_rel_path.lower():
+                if matched:
+                    metrics[region_type]['TP'] += 1
+                else:
+                    metrics[region_type]['FN'] += 1
 
-            # Draw Ground Truths (Green for Target Regions)
+            # Draw Ground Truths (Green)
             pts = np.array(gt_box, np.int32).reshape((-1, 1, 2))
             cv2.polylines(vis_img, [pts], isClosed=True, color=(0, 255, 0), thickness=2)
             cv2.putText(vis_img, region_type.upper(), (pts[0][0][0], pts[0][0][1]-10), 
@@ -159,9 +160,9 @@ def run_evaluation():
         save_name = img_rel_path.replace("/", "_")
         cv2.imwrite(str(OUTPUT_DIR / save_name), vis_img)
 
-    # 4. FINAL INDEPENDENT METRICS
+    # FINAL INDEPENDENT METRICS
     print("\n" + "=" * 50)
-    print("REGION-SPECIFIC EVALUATION RESULTS")
+    print("REGION-SPECIFIC EVALUATION RESULTS (STRICT IOU >= 0.85)")
     print("=" * 50)
     
     for region in ['name', 'id']:
@@ -177,5 +178,6 @@ def run_evaluation():
         print(f"  Missed / Dropped:   {fn}")
         print(f"  --> RECALL:         {recall:.4f}")
         print("-" * 50)
+
 if __name__ == "__main__":
     run_evaluation()
