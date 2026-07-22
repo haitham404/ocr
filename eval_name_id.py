@@ -12,7 +12,7 @@ from paddleocr import TextDetection
 BASE_DIR = Path(__file__).resolve().parent
 
 # NOTE: Check these paths!
-IMAGE_ROOT_DIR = BASE_DIR / "Dataset" 
+IMAGE_ROOT_DIR = BASE_DIR / "Actual_cards" 
 VAL_TXT_PATH = IMAGE_ROOT_DIR / "val.txt"
 OUTPUT_DIR = BASE_DIR / "eval_results"
 
@@ -76,6 +76,7 @@ def run_evaluation():
         image_path = line.split('\t')[0].lower() 
         # if "back" in image_path:
         lines.append(line)
+        print(line)
 
     metrics = {
         'name': {'TP': 0, 'FN': 0, 'GT_Total': 0},

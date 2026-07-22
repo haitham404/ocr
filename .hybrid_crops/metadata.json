@@ -1,0 +1,251 @@
+{
+  "hytham_back_col": {
+    "image_path": "Actual_cards/hytham_back_col.jpeg",
+    "fields": {
+      "issue": {
+        "bbox": [
+          286,
+          37,
+          432,
+          76
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_back_col/issue.jpg"
+      },
+      "watermark_tut": {
+        "bbox": [
+          22,
+          41,
+          226,
+          279
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_back_col/watermark_tut.jpg"
+      },
+      "expiry": {
+        "bbox": [
+          329,
+          282,
+          813,
+          337
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_back_col/expiry.jpg"
+      },
+      "demo": {
+        "bbox": [
+          357,
+          177,
+          832,
+          239
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_back_col/demo.jpg"
+      }
+    }
+  },
+  "hytham_front_col": {
+    "image_path": "Actual_cards/hytham_front_col.jpeg",
+    "fields": {
+      "serial": {
+        "bbox": [
+          86,
+          572,
+          327,
+          629
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/serial.jpg"
+      },
+      "address": {
+        "bbox": [
+          514,
+          301,
+          952,
+          410
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/address.jpg"
+      },
+      "front_logo": {
+        "bbox": [
+          443,
+          18,
+          852,
+          146
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/front_logo.jpg"
+      },
+      "photo": {
+        "bbox": [
+          20,
+          45,
+          284,
+          382
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/photo.jpg"
+      },
+      "dob": {
+        "bbox": [
+          38,
+          442,
+          376,
+          558
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/dob.jpg"
+      },
+      "lastName": {
+        "bbox": [
+          535,
+          229,
+          951,
+          282
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/lastName.jpg"
+      },
+      "firstName": {
+        "bbox": [
+          873,
+          166,
+          946,
+          225
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/firstName.jpg"
+      },
+      "nid": {
+        "bbox": [
+          444,
+          493,
+          972,
+          554
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/nid.jpg",
+        "nid_crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/hytham_front_col/nid_expanded.jpg",
+        "nid_text": "3040704160365"
+      }
+    }
+  },
+  "youssof_back_col": {
+    "image_path": "Actual_cards/youssof_back_col.jpeg",
+    "fields": {
+      "expiry": {
+        "bbox": [
+          335,
+          292,
+          815,
+          347
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_back_col/expiry.jpg"
+      },
+      "watermark_tut": {
+        "bbox": [
+          15,
+          33,
+          226,
+          279
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_back_col/watermark_tut.jpg"
+      },
+      "demo": {
+        "bbox": [
+          360,
+          187,
+          812,
+          243
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_back_col/demo.jpg"
+      },
+      "issue": {
+        "bbox": [
+          288,
+          44,
+          430,
+          89
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_back_col/issue.jpg"
+      },
+      "nid_back": {
+        "bbox": [
+          484,
+          43,
+          811,
+          91
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_back_col/nid_back.jpg"
+      }
+    }
+  },
+  "youssof_front_col": {
+    "image_path": "Actual_cards/youssof_front_col.jpeg",
+    "fields": {
+      "address": {
+        "bbox": [
+          555,
+          310,
+          945,
+          411
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/address.jpg"
+      },
+      "photo": {
+        "bbox": [
+          22,
+          30,
+          280,
+          385
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/photo.jpg"
+      },
+      "front_logo": {
+        "bbox": [
+          450,
+          14,
+          860,
+          142
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/front_logo.jpg"
+      },
+      "dob": {
+        "bbox": [
+          38,
+          441,
+          366,
+          560
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/dob.jpg"
+      },
+      "nid": {
+        "bbox": [
+          444,
+          495,
+          969,
+          556
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/nid.jpg",
+        "nid_crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/nid_expanded.jpg",
+        "nid_text": "30405060103113"
+      },
+      "lastName": {
+        "bbox": [
+          483,
+          230,
+          953,
+          291
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/lastName.jpg"
+      },
+      "firstName": {
+        "bbox": [
+          839,
+          171,
+          951,
+          229
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/firstName.jpg"
+      },
+      "serial": {
+        "bbox": [
+          93,
+          569,
+          338,
+          627
+        ],
+        "crop_path": "/Users/youssofhossam/AI/OCR/ocr/.hybrid_crops/youssof_front_col/serial.jpg"
+      }
+    }
+  }
+}
